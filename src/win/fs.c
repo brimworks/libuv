@@ -1309,14 +1309,14 @@ static void fs__access(uv_fs_t* req) {
     return;
   }
 
-  if ((req->flags & W_OK) &&
-      ((attr & FILE_ATTRIBUTE_READONLY) ||
-      (attr & FILE_ATTRIBUTE_DIRECTORY))) {
+  if (!(req->flags & W_OK) ||
+      !(attr & FILE_ATTRIBUTE_READONLY) ||
+      (attr & FILE_ATTRIBUTE_DIRECTORY)) {
+    SET_REQ_RESULT(req, 0);
+  } else {
     SET_REQ_WIN32_ERROR(req, UV_EPERM);
-    return;
   }
 
-  SET_REQ_RESULT(req, 0);
 }
 
 
